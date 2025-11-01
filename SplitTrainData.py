@@ -20,7 +20,7 @@ class logger():
                 writer.writerow([message])
         return
 
-log = logger()
+# log = logger()
 
 class DataReader(object):
     def __init__(self, splits = 5):
