@@ -11,27 +11,19 @@ from sklearn.pipeline import Pipeline
 from sklearn.model_selection import TimeSeriesSplit
 import DataProcessing as dp
 
-label_df = pd.read_csv("Data/train_labels.csv")
-chunks = pd.read_csv("Data/train_data.csv", chunksize=50000)
-
-df_list = []
-for chunk in chunks:
-    # Convert to numeric, handle errors
-    chunk = chunk.apply(pd.to_numeric, errors='coerce')
-    chunk = chunk.fillna(0).astype(np.float32)
-    df_list.append(chunk)
 
 # Combine all chunks into one DataFrame
-train_df = pd.concat(df_list, ignore_index=True)
+merged_df = pd.read_csv("SplitData/train_data_0.csv")
 
-print(train_df.shape)
-print(label_df.shape)
+# print(train_df.shape)
+# print(label_df.shape)
 
-merged_df = pd.merge(train_df, label_df, on="customer_ID")
-merged_df = dp.replace_nulls_with_mean(merged_df)
+# merged_df = pd.merge(train_df, label_df, on="customer_ID")
+# merged_df = dp.replace_nulls_with_mean(merged_df)
 # print(merged_df.shape)
 
 merged_df['S_2'] = pd.to_datetime(merged_df['S_2'])
+merged_df = merged_df.drop(columns=['customer_ID'])
 df = merged_df
 
 train_val_mask = (df['S_2'] >= "2017-03-01") & (df['S_2'] <= "2017-11-30")

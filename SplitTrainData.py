@@ -88,14 +88,14 @@ split_data_into = 5
 
 DR = DataReader(split_data_into)
 
-os.makedirs("SplitData", exist_ok=True)
+os.makedirs("SplitData1", exist_ok=True)
 
 for i in range(split_data_into):
     print(f"Split: {i}")
     train_df, labels_df = DR.get_dataset(i)
 
     merged_df = pd.merge(train_df, labels_df, on="customer_ID")
-    merged_df.to_csv(f"SplitData/train_data_{i}.csv", index=False)
+    merged_df.to_csv(f"SplitData1/train_data_{i}.csv", index=False)
 
     del train_df, labels_df, merged_df
     gc.collect()
