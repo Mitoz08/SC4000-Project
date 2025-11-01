@@ -7,6 +7,7 @@ class logger():
     def __init__(self):
         self.folder = f"Data/"
         os.makedirs(self.folder, exist_ok=True)
+        os.makedirs(self.folder, exist_ok=True)
     def write(self, message, file_no = 0):
         filenames = os.path.join(self.folder, f"Raw_{file_no}.txt")
         with open(filenames, 'a', newline='') as f:
@@ -85,6 +86,9 @@ class DataReader(object):
 split_data_into = 5
 
 DR = DataReader(split_data_into)
+
+os.makedirs("SplitData", exist_ok=True)
+
 for i in range(split_data_into):
     print(f"Split: {i}")
     train_df, labels_df = DR.get_dataset(i)
