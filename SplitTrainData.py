@@ -1,5 +1,6 @@
 import csv
 import os
+import gc
 
 import pandas as pd
 
@@ -95,3 +96,6 @@ for i in range(split_data_into):
 
     merged_df = pd.merge(train_df, labels_df, on="customer_ID")
     merged_df.to_csv(f"SplitData/train_data_{i}.csv", index=False)
+
+    del train_df, labels_df, merged_df
+    gc.collect()
