@@ -95,6 +95,8 @@ def Metric(labels,preds):
 
 
 # kNN with PCA and StratifiedKFold
+
+# The two hyperparams variance percentage (in pca_vals) and no. of neighbors
 pca_vals = [0.25, 0.5, 0.7, 0.9, 0.95]
 n_neighbors = [20, 50, 70, 100, 120]
 skf = StratifiedKFold(n_splits=5, random_state=42, shuffle=True)
