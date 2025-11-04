@@ -79,7 +79,7 @@ def denoise(df):
     df['D_64'] = df['D_64'].apply(lambda t: {np.nan:-1, 'O':0, '-1':1, 'R':2, 'U':3}[t]).astype(np.int8)
     for col in df.columns:
         if col not in ['customer_ID','S_2','D_63','D_64']:
-            df[col] = np.floor(df[col]*100)
+            df[col] = np.floor(df[col]*100)/100
     return df
 
 def one_hot_encoding(df,cols,is_drop=True):
@@ -116,41 +116,39 @@ def num_feature(df):
 
     return df
 
+os.makedirs("ProcessedData", exist_ok=True)
+
+df = pd.read_csv(f"Data/test_data.csv")
+
+# print(df.shape)
+columns = df.columns
+
+# print(columns)
+
+cat_features = ['B_30', 'B_38', 'D_114', 'D_116', 'D_117', 'D_120', 'D_126', 'D_63', 'D_64', 'D_66', 'D_68']
+num_features = [col for col in columns if (col not in cat_features and col not in ["customer_ID", "S_2"])]
+
+# print(num_features)
+
+df = replace_nulls_with_mean(df)
+df = denoise(df)
+df = one_hot_encoding(df,cat_features,False)
+cat_df = cat_feature(df)
+num_df = num_feature(df)
+# print(cat_df.shape)
+# print(num_df.shape)
+#
+# print(cat_df.columns)
+# print(num_df.columns)
+
+merged_df = pd.merge(cat_df, num_df, on=["customer_ID"], how="left")
+
+merged_df.to_csv(f"ProcessedData/test_data_full.csv", index=False)
+
+print(merged_df.shape)
+
+del merged_df
+gc.collect()
 
 
-for i in range(5):
-    print(f"Converting file {i}")
-    df = pd.read_csv(f"SplitData/train_data_{i}.csv")
-
-    # print(df.shape)
-    columns = df.columns
-
-    # print(columns)
-
-    cat_features = ['B_30', 'B_38', 'D_114', 'D_116', 'D_117', 'D_120', 'D_126', 'D_63', 'D_64', 'D_66', 'D_68']
-    num_features = [col for col in columns if (col not in cat_features and col not in ["customer_ID", "S_2"])]
-
-    # print(num_features)
-
-    df = replace_nulls_with_mean(df)
-    df = denoise(df)
-    df = one_hot_encoding(df,cat_features,False)
-    cat_df = cat_feature(df)
-    num_df = num_feature(df)
-    # print(cat_df.shape)
-    # print(num_df.shape)
-    #
-    # print(cat_df.columns)
-    # print(num_df.columns)
-
-    merged_df = pd.merge(cat_df, num_df, on=["customer_ID"], how="left")
-
-    merged_df.to_csv(f"SplitData/train_data_{i}.csv", index=False)
-
-    del merged_df
-    gc.collect()
-
-    # print(merged_df.shape)
-
-
-
+# print(merged_df.shape)
