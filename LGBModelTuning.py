@@ -38,8 +38,8 @@ def Metric(labels,preds):
 
 
 #Read train data into a dataframe
-file_path_1 = "./train_data/train_data.csv"
-df = pd.read_csv(file_path_1)
+file_path_1 = "./Data/train_data_full_4.parquet"
+df = pd.read_parquet(file_path_1)
 
 print(f"Shape before including target column {df.shape}")
 
@@ -50,33 +50,6 @@ df_2 = pd.read_csv(file_path_2)
 df = pd.merge(df, df_2, on=["customer_ID"], how="left")
 
 print(f"Shape after including target colum {df.shape} ")
-
-std_cols = [c for c in df.columns if 'std' in c]
-df[std_cols] = df[std_cols].fillna(0)
-
-column_dict = {
-    "one_hot_col":[],
-    "cat_col": [],
-    "S_2_count_col": [],
-    "num_col": []
-}
-
-for col in df.columns:
-    if col == "customer_ID":
-        continue
-    if "oneHot" in col:
-        column_dict["one_hot_col"].append(col)
-        continue
-    if "nunique" in col:
-        column_dict["cat_col"].append(col)
-        continue
-    if "S_2_count" in col:
-        column_dict["S_2_count_col"].append(col)
-        continue
-    if "target" in col:
-        continue
-    column_dict["num_col"].append(col)
-
 
 #Features in LightGBM
 features = [col for col in df.columns if col not in ["customer_ID", "target"]]

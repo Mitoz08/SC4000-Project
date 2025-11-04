@@ -35,11 +35,9 @@ def Metric(labels,preds):
     return amex_metric_mod(labels,preds)
 
 
-
-
 #Read train data into a dataframe
-file_path_1 = "./train_data/train_data.csv"
-df = pd.read_csv(file_path_1)
+file_path_1 = "./Data/train_data_full_4.parquet"
+df = pd.read_parquet(file_path_1)
 
 print(f"Shape before including target column {df.shape}")
 
@@ -50,33 +48,6 @@ df_2 = pd.read_csv(file_path_2)
 df = pd.merge(df, df_2, on=["customer_ID"], how="left")
 
 print(f"Shape after including target colum {df.shape} ")
-
-std_cols = [c for c in df.columns if 'std' in c]
-df[std_cols] = df[std_cols].fillna(0)
-
-column_dict = {
-    "one_hot_col":[],
-    "cat_col": [],
-    "S_2_count_col": [],
-    "num_col": []
-}
-
-for col in df.columns:
-    if col == "customer_ID":
-        continue
-    if "oneHot" in col:
-        column_dict["one_hot_col"].append(col)
-        continue
-    if "nunique" in col:
-        column_dict["cat_col"].append(col)
-        continue
-    if "S_2_count" in col:
-        column_dict["S_2_count_col"].append(col)
-        continue
-    if "target" in col:
-        continue
-    column_dict["num_col"].append(col)
-
 
 #Features in LightGBM
 features = [col for col in df.columns if col not in ["customer_ID", "target"]]
@@ -91,14 +62,14 @@ print(f"Shape of y: {y.shape}")
 # print(f"The first 5 entires of y is {y.head(5)}")
 
 
-print(f"Training final model on {64} bin and {256} number of leaves")
+print(f"Training final model on {128} bin and {64} number of leaves")
 params = {
     "objective" : "binary",
     "metric" : "binary_logloss",
     "boosting" : "dart",
     "num_iterations" : 2000,
     "learning_rate" : 0.05,
-    "num_leaves" : 256,                  
+    "num_leaves" : 64,                  
     "device_type" : "gpu",
     "seed" : 42,
     "max_depth" : 70,
@@ -108,7 +79,7 @@ params = {
     "bagging_fraction" : 0.5,
     "bagging_freq" : 5,
     "feature_fraction" : 0.5,
-    "max_bin" : 64,
+    "max_bin" : 128,
     "min_data_in_bin" : 128,    
 }
 lgb_train_data = lgb.Dataset(data=X, label=y)
