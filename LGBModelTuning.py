@@ -36,32 +36,21 @@ def Metric(labels,preds):
 
 
 
-
 #Read train data into a dataframe
-file_path_1 = "./Data/train_data_full_4.parquet"
-df = pd.read_parquet(file_path_1)
+file_path = "./train_data/train.parquet"
+df = pd.read_parquet(file_path)
 
 print(f"Shape before including target column {df.shape}")
-
-#Read train labels into a dataframe
-file_path_2 = "./Data/train_labels.csv"
-df_2 = pd.read_csv(file_path_2)
-
-df = pd.merge(df, df_2, on=["customer_ID"], how="left")
-
-print(f"Shape after including target colum {df.shape} ")
 
 #Features in LightGBM
 features = [col for col in df.columns if col not in ["customer_ID", "target"]]
 print(f"Number of features is {len(features)}")
 X = df[features]
 print(f"Shape of X: {X.shape}")
-# print(f"The first 5 entries of X is {X.head(5)}")
 
 #Target labels for training 
 y = df["target"] 
 print(f"Shape of y: {y.shape}")
-# print(f"The first 5 entires of y is {y.head(5)}")
 
 #Hyper-parameters to tune
 NLs = [64,128,256]
@@ -78,8 +67,8 @@ for i,bin in enumerate(bins):
             "objective" : "binary",
             "metric" : "binary_logloss",
             "boosting" : "dart",
-            "num_iterations" : 1000,
-            "learning_rate" : 0.05,
+            "num_iterations" : 6000,
+            "learning_rate" : 0.02,
             "num_leaves" : NL,                  
             "device_type" : "gpu",
             "seed" : 42,
@@ -87,9 +76,9 @@ for i,bin in enumerate(bins):
             "min_data_in_leaf" : 128,
             "lambda_l1" : 0.1,
             "lambda_l2" : 30,
-            "bagging_fraction" : 0.5,
+            "bagging_fraction" : 0.7,
             "bagging_freq" : 5,
-            "feature_fraction" : 0.5,
+            "feature_fraction" : 0.3,
             "max_bin" : bin,
             "min_data_in_bin" : 128,    
         }
@@ -111,4 +100,4 @@ for i,bin in enumerate(bins):
 
 print(results)
 
-#Use 64 number of leaves and 255 bins for final model
+#Use 255 bins and 64 number of leaves used in final model
