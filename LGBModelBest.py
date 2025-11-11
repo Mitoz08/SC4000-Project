@@ -36,7 +36,7 @@ def Metric(labels,preds):
 
 
 #Read train data into a dataframe
-file_path_1 = "./train_data/train_fe_plus_plus.parquet"
+file_path_1 = "./train_data/train.parquet"
 df = pd.read_parquet(file_path_1)
 
 print(f"Shape before including target column {df.shape}")
