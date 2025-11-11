@@ -90,7 +90,7 @@ xgb_model = xgb.train(
 preds = xgb_model.predict(dval)
 print(amex_metric_mod(y_val,preds))
 
-file_path_1 = "./train_data/test_fe_plus_plus.parquet"
+file_path_1 = "./train_data/test.parquet"
 df1 = pd.read_parquet(file_path_1)
 df1 = df1.replace([np.inf, -np.inf], np.nan)
 print(df1.shape)
@@ -106,7 +106,7 @@ df_pred = df1[["customer_ID"]].copy()
 df_pred["prediction"] = val_pred
 df_final = df_pred[["customer_ID","prediction"]]
 
-df_final.to_csv("submission_final_xgb_67.csv.zip", index= False, compression="zip")
+df_final.to_csv("submission_final_xgb_13.csv.zip", index= False, compression="zip")
 print(df_final.head(100))
 
 
