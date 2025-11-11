@@ -1,4 +1,3 @@
-import os
 import xgboost as xgb
 from sklearn.model_selection import train_test_split 
 import numpy as np
@@ -36,7 +35,7 @@ def Metric(labels,preds):
 
 
 #Read train data into a dataframe
-file_path_1 = "./train_data/train_fe_plus_plus.parquet"
+file_path_1 = "./train_data/train.parquet"
 df = pd.read_parquet(file_path_1)
 
 print(f"Shape before including target column {df.shape}")
@@ -56,7 +55,7 @@ print(f"Shape of y: {y.shape}")
 # print(f"The first 5 entires of y is {y.head(5)}")
 
 X = X.replace([np.inf, -np.inf], np.nan)
-X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42, shuffle = True, stratify=y)
+X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=13, shuffle = True, stratify=y)
 dtrain = xgb.DMatrix(X_train, label=y_train)
 dval = xgb.DMatrix(X_val, label=y_val)
 
@@ -76,7 +75,7 @@ params = {
     'tree_method': 'hist',
     'max_bin': 128,
     'grow_policy': 'lossguide',
-    'seed' : 67,
+    'seed' : 13,
 }
 
 xgb_model = xgb.train(
