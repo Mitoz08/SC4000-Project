@@ -36,54 +36,48 @@ def Metric(labels,preds):
 
 
 #Read train data into a dataframe
-file_path_1 = "./Data/train_data_full_4.parquet"
+file_path_1 = "./train_data/train_fe_plus_plus.parquet"
 df = pd.read_parquet(file_path_1)
 
 print(f"Shape before including target column {df.shape}")
+print(df.head(5))
 
-#Read train labels into a dataframe
-file_path_2 = "./Data/train_labels.csv"
-df_2 = pd.read_csv(file_path_2)
-
-df = pd.merge(df, df_2, on=["customer_ID"], how="left")
-
-print(f"Shape after including target colum {df.shape} ")
 
 #Features in LightGBM
 features = [col for col in df.columns if col not in ["customer_ID", "target"]]
 print(f"Number of features is {len(features)}")
 X = df[features]
 print(f"Shape of X: {X.shape}")
-# print(f"The first 5 entries of X is {X.head(5)}")
 
-#Target labels for training 
+
+# #Target labels for training 
 y = df["target"] 
 print(f"Shape of y: {y.shape}")
 # print(f"The first 5 entires of y is {y.head(5)}")
 
 
-print(f"Training final model on {128} bin and {64} number of leaves")
+print(f"Training final model on {255} bin and {64} number of leaves")
 params = {
     "objective" : "binary",
     "metric" : "binary_logloss",
     "boosting" : "dart",
-    "num_iterations" : 2000,
-    "learning_rate" : 0.05,
+    "num_iterations" : 6000,
+    "learning_rate" : 0.025,
     "num_leaves" : 64,                  
     "device_type" : "gpu",
-    "seed" : 42,
+    "seed" : 62,
     "max_depth" : 70,
     "min_data_in_leaf" : 128,
     "lambda_l1" : 0.1,
     "lambda_l2" : 30,
-    "bagging_fraction" : 0.5,
+    "bagging_fraction" : 0.70,
     "bagging_freq" : 5,
-    "feature_fraction" : 0.5,
-    "max_bin" : 128,
+    "feature_fraction" : 0.3,
+    "max_bin" : 255,
     "min_data_in_bin" : 128,    
 }
 lgb_train_data = lgb.Dataset(data=X, label=y)
-eval_results = lgb.cv(params = params, train_set = lgb_train_data, nfold =5, stratified=True, shuffle=True,seed=42, callbacks=[lgb.log_evaluation(50)], return_cvbooster=True)
+eval_results = lgb.cv(params = params, train_set = lgb_train_data, nfold =5, stratified=True, shuffle=True,seed=62, callbacks=[lgb.log_evaluation(50)], return_cvbooster=True)
 
 X_train, X_val, y_train, y_val = train_test_split(X,y, test_size=0.2, stratify=y)
 cvboosters = eval_results["cvbooster"]
@@ -92,5 +86,6 @@ for i,booster in enumerate(cvboosters.boosters):
     AmexMetric = Metric(y_val, val_pred)
     print(f"The AmexMetric for the {i+1}-th fold is {AmexMetric}")
     print(f"Saving model now...")
-    booster.save_model(f"./models/fold_{i}.txt")
+    booster.save_model(f"./modelsNew62_3_0.3/fold_{i}.txt")
+
 
